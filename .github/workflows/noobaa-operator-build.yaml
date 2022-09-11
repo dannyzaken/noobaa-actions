@@ -31,15 +31,10 @@ jobs:
       - name: Prepare Tags
         id: prep
         run: |
-          DOCKER_BASE_IMAGE=dannyzaken/noobaa-base
-          DOCKER_BUILDER_IMAGE=dannyzaken/noobaa-builder
           DOCKER_OPERATOR_IMAGE=dannyzaken/noobaa-operator
           VERSION="${{ steps.date.outputs.date }}"
           echo "::warning ${VERSION}"
-          BASE_TAGS="${DOCKER_BASE_IMAGE}:${{ github.event.inputs.branch }}-${VERSION}${{ steps.suffix.outputs.suffix }}"
-          BUILDER_TAGS="${DOCKER_BUILDER_IMAGE}:${{ github.event.inputs.branch }}-${VERSION}${{ steps.suffix.outputs.suffix }}"
           OPERATOR_TAGS="${DOCKER_OPERATOR_IMAGE}:${{ github.event.inputs.branch }}-${VERSION}${{ steps.suffix.outputs.suffix }}"
-          CORE_OCS_DEV_TAG="ocs-dev/noobaa-operator:${{ github.event.inputs.branch }}-latest"
           echo "::warning ${OPERATOR_TAGS}"
           echo ::set-output name=basetags::${BASE_TAGS}
           echo ::set-output name=buildertags::${BUILDER_TAGS}
