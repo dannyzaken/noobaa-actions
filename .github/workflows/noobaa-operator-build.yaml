@@ -28,17 +28,17 @@ jobs:
         if: ${{ github.event.inputs.tag != '' }}
         run: echo ::set-output name=suffix::"-${{ github.event.inputs.tag }}"
 
-      - name: Prepare Tags
-        id: prep
-        run: |
-          DOCKER_OPERATOR_IMAGE=dannyzaken/noobaa-operator
-          VERSION="${{ steps.date.outputs.date }}"
-          echo "::warning ${VERSION}"
-          OPERATOR_TAGS="${DOCKER_OPERATOR_IMAGE}:${{ github.event.inputs.branch }}-${VERSION}${{ steps.suffix.outputs.suffix }}"
-          echo "::warning ${OPERATOR_TAGS}"
-          echo ::set-output name=basetags::${BASE_TAGS}
-          echo ::set-output name=buildertags::${BUILDER_TAGS}
-          echo ::set-output name=operatortags::${OPERATOR_TAGS}
+#       - name: Prepare Tags
+#         id: prep
+#         run: |
+#           DOCKER_OPERATOR_IMAGE=dannyzaken/noobaa-operator
+#           VERSION="${{ steps.date.outputs.date }}"
+#           echo "::warning ${VERSION}"
+#           OPERATOR_TAGS="${DOCKER_OPERATOR_IMAGE}:${{ github.event.inputs.branch }}-${VERSION}${{ steps.suffix.outputs.suffix }}"
+#           echo "::warning ${OPERATOR_TAGS}"
+#           echo ::set-output name=basetags::${BASE_TAGS}
+#           echo ::set-output name=buildertags::${BUILDER_TAGS}
+#           echo ::set-output name=operatortags::${OPERATOR_TAGS}
 
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
@@ -47,6 +47,6 @@ jobs:
         env:
           DOCKERHUB_OWNER: ${{ secrets.GHACTIONSDOCKERHUBNAME }}
         run: |
-          make image IMAGE=${{ steps.prep.outputs.operatortags }}
-          docker push ${{ steps.prep.outputs.operatortags }}
+          make image IMAGE=dannyzaken/noobaa-operator:${{ github.event.inputs.branch }}-${ steps.date.outputs.date }
+          docker push dannyzaken/noobaa-operator:${{ github.event.inputs.branch }}-${ steps.date.outputs.date }
 
