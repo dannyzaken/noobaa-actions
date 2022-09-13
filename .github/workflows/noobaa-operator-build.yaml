@@ -18,6 +18,7 @@ jobs:
         with:
           repository: 'dannyzaken/noobaa-operator'
           ref: ${{ github.event.inputs.branch }}
+          path: 'noobaa-operator'
 
       - name: Get Current Date
         id: date
