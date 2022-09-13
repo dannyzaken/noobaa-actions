@@ -47,6 +47,7 @@ jobs:
         env:
           DOCKERHUB_OWNER: ${{ secrets.GHACTIONSDOCKERHUBNAME }}
         run: |
-          make image IMAGE=dannyzaken/noobaa-operator:${{ github.event.inputs.branch }}-${{ steps.date.outputs.date }}
+          make image IMAGE=dannyzaken/noobaa-operator:${{ github.event.inputs.branch }}-${{ steps.date.outputs.date }} || true
+          ls -l build/_output/bin
           docker push dannyzaken/noobaa-operator:${{ github.event.inputs.branch }}-${{ steps.date.outputs.date }}
 
