@@ -35,7 +35,7 @@ jobs:
           tag: ${{ github.event.inputs.tag }}
           registry: docker.io/dannyzaken/cloudnative-pg-noobaa
         with:
-          source: .
+          source: ./cloudnative-pg
           push: false
           no-cache: true
           targets: "default"
