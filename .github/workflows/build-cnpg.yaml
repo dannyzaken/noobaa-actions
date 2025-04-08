@@ -1,3 +1,5 @@
+name: Build CNPG image
+
 on:
   workflow_dispatch:
     inputs:
