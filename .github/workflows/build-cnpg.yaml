@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
+      - name: Setup Docker
+        uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 12
+      - name: docker version
+        run: |
+          set -x
+          docker version
+          docker run --rm hello-world
+          
       - name: Checkout CNPG Repository
         uses: actions/checkout@v4
         with:
@@ -20,28 +29,14 @@ jobs:
           ref: ${{ github.event.inputs.tag }}
           path: 'cloudnative-pg'
 
-      - name: Modify API group
+      - name: Build CNPG Image
         run: |
           cd cloudnative-pg
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
+          make CONTROLLER_IMG=docker.io/noobaa/cloudnative-pg-noobaa:${{ github.event.inputs.tag }} docker-build
 
-      - name: Login to docker Registry
-        run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
+      - name: Login to docker.io Registry
+        run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
 
-      - name: Build and push
-        uses: docker/bake-action@4ba453fbc2db7735392b93edf935aaf9b1e8f747 # v6
-        id: bake-push
-        env:
-          environment: "production"
-          buildVersion: ${{ github.event.inputs.tag }}
-          tag: ${{ github.event.inputs.tag }}
-          registry: docker.io/dannyzaken/cloudnative-pg-noobaa
-        with:
-          source: ./cloudnative-pg
-          push: false
-          no-cache: true
-          targets: "default"
-
-
-      - name: Push CNPG Image to dockerhub
+      - name: Push CNPG Image to Dockerhub
         run: docker push docker.io/noobaa/cloudnative-pg-noobaa:${{ github.event.inputs.tag }}
