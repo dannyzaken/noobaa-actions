@@ -43,13 +43,18 @@ jobs:
 
       - name: Login to docker.io Registry
         run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
-          
 
-      - name: Build CNPG Image
+      - name: Build CNPG Image amd64
         run: |
           cd cloudnative-pg
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
-          make CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
+          make ARCH=amd64 CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
 
-      # - name: Push CNPG Image to Dockerhub
+      - name: Build CNPG Image arm64
+        run: |
+          cd cloudnative-pg
+          find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
+          make ARCH=arm64 CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
+    
+        # - name: Push CNPG Image to Dockerhub
       #   run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
