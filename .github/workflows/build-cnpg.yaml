@@ -36,7 +36,7 @@ jobs:
         run: |
           cd cloudnative-pg
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
-          make ARCH="amd64,linux/arm64" CONTROLLER_IMG=quay.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} docker-build
+          make ARCH="" CONTROLLER_IMG=quay.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} docker-build
 
 
       # - name: Push CNPG Image to Quay
