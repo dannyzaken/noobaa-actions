@@ -39,4 +39,4 @@ jobs:
         run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
 
       - name: Push CNPG Image to Dockerhub
-        run: docker push docker.io/noobaa/cloudnative-pg-noobaa:${{ github.event.inputs.tag }}
+        run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
