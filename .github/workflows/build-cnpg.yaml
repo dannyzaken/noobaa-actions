@@ -20,17 +20,17 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           cache-image: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
 
-      - name: docker version
-        run: |
-          set -x
-          docker version
-          docker run --rm hello-world
+      # - name: docker version
+      #   run: |
+      #     set -x
+      #     docker version
+      #     docker run --rm hello-world
           
       - name: Checkout CNPG Repository
         uses: actions/checkout@v4
@@ -51,5 +51,5 @@ jobs:
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
           make CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
 
-      - name: Push CNPG Image to Dockerhub
-        run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
+      # - name: Push CNPG Image to Dockerhub
+      #   run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
