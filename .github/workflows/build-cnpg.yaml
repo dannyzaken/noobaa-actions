@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "The tag or branch that will be used as the base image for the CNPG Operator (default: v1.25.0 )"
+        description: "The tag or branch that will be used as the base image for the CNPG Operator (default: v1.27.0 )"
         required: false
         default: "v1.27.0"
 
@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      # - name: Setup Docker
-      #   uses: docker-practice/actions-setup-docker@master
-      #   timeout-minutes: 12
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
@@ -26,35 +23,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
 
-      # - name: docker version
-      #   run: |
-      #     set -x
-      #     docker version
-      #     docker run --rm hello-world
-          
       - name: Checkout CNPG Repository
         uses: actions/checkout@v4
         with:
           repository: 'cloudnative-pg/cloudnative-pg'
           ref: ${{ github.event.inputs.tag }}
           path: 'cloudnative-pg'
-
-
-
-      - name: Login to docker.io Registry
-        run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
-
-      - name: Build CNPG Image amd64
+          
+      - name: Login to Quay.io Registry
+        run: echo ${{ secrets.GHACTIONQUAYTOKEN }} | docker login quay.io -u ${{ secrets.GHACTIONQUAYNAME }} --password-stdin
+      - name: Build CNPG Image
         run: |
           cd cloudnative-pg
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
-          make ARCH="amd64,arm64" CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
+          make CONTROLLER_IMG=quay.io/dannyzaken/cloudnative-pg-testing :${{ github.event.inputs.tag }} docker-build
 
-      # - name: Build CNPG Image arm64
-      #   run: |
-      #     cd cloudnative-pg
-      #     find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
-      #     make ARCH=arm64 CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
-    
-        # - name: Push CNPG Image to Dockerhub
-      #   run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
+
+      # - name: Push CNPG Image to Quay
+      #   run: docker push quay.io/noobaa/cloudnative-pg-noobaa:${{ github.event.inputs.tag }}
