@@ -39,14 +39,17 @@ jobs:
           ref: ${{ github.event.inputs.tag }}
           path: 'cloudnative-pg'
 
+
+
+      - name: Login to docker.io Registry
+        run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
+          
+
       - name: Build CNPG Image
         run: |
           cd cloudnative-pg
           find . -name .git -a -type d -prune -o -type f -exec sed -i -e 's|postgresql.cnpg.io|postgresql.cnpg.noobaa.io|g' -e 's|postgresql-cnpg-io|postgresql-cnpg-noobaa-io|g' {} +
           make CONTROLLER_IMG=docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }} insecure="true" docker-build
-
-      - name: Login to docker.io Registry
-        run: echo ${{ secrets.GHACTIONSDOCKERHUB }} | docker login  -u ${{ secrets.GHACTIONSDOCKERHUBNAME }} --password-stdin
 
       - name: Push CNPG Image to Dockerhub
         run: docker push docker.io/dannyzaken/cloudnative-pg-testing:${{ github.event.inputs.tag }}
