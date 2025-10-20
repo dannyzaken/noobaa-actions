@@ -57,9 +57,10 @@ jobs:
       - name: Login to Quay Registry
         run: echo ${{ secrets.GHACTIONQUAYTOKEN }} | docker login quay.io -u ${{ secrets.GHACTIONQUAYNAME }} --password-stdin
 
-      - name: Push Docker Images to Quay
+      - name: Build & Push Docker Images to Quay
         env:
           DOCKERHUB_OWNER: ${{ secrets.GHACTIONQUAYNAME }}
         run: |
+            make noobaa
             docker tag noobaa quay.io/${{ steps.prep.outputs.coretags }}
             docker push quay.io/${{ steps.prep.outputs.coretags }}
